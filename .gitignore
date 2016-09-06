@@ -1,0 +1,22 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+
+# Angular
+src/main/resources/static/angular/*/typings
+src/main/resources/static/angular/*/bin/**/*.js
+src/main/resources/static/angular/*/bin/**/*.map
+src/main/resources/static/angular/*/node_modules
