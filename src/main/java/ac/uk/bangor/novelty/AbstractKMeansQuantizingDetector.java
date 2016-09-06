@@ -61,10 +61,6 @@ public abstract class AbstractKMeansQuantizingDetector implements Detector<doubl
     @Getter(AccessLevel.PROTECTED)
     private int nFeatures;
 
-    @Setter
-    private Function<double[][], double[][]> featureExtractor;
-
-
     private double[][] covariance;
 
     public AbstractKMeansQuantizingDetector(FixedWindowPair<double[]> windowPair) {
@@ -176,11 +172,6 @@ public abstract class AbstractKMeansQuantizingDetector implements Detector<doubl
 
         double[][] window1 = windowPair.getWindow1().getElements();
         double[][] window2 = windowPair.getWindow2().getElements();
-
-        if(featureExtractor != null) {
-            window1 = featureExtractor.apply(window1);
-            window2 = featureExtractor.apply(window2);
-        }
 
         this.nFeatures = window1[0].length;
 
