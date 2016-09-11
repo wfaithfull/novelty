@@ -1,7 +1,5 @@
-import ac.uk.bangor.novelty.Detector;
-import ac.uk.bangor.novelty.EWMA;
-import ac.uk.bangor.novelty.Grubbs;
-import ac.uk.bangor.novelty.MovingRange;
+import ac.uk.bangor.novelty.*;
+import ac.uk.bangor.novelty.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.distribution.GammaDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -65,6 +63,20 @@ public class TestUnivariateDetectors {
     public void testMovingRange() {
         log.info("Starting moving range test");
         evaluate(new MovingRange());
+    }
+
+    @Test
+    public void testCUSUM() {
+        log.info("Starting CUSUM test");
+        evaluate(new CUSUM());
+    }
+
+    @Test
+    public void printData() {
+        Stream<Double> changeStream = testDataProviderFactory().limit(1000);
+
+        String ml = CollectionUtils.toMatlabFormat(changeStream.mapToDouble(d -> d).toArray());
+        log.info(ml);
     }
 
     public void evaluate(Detector<Double> univariateDetector) {
