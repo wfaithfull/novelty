@@ -4,7 +4,9 @@ import ac.uk.bangor.novelty.Detector;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,13 +15,13 @@ import java.util.Set;
 @Slf4j
 public class QuorumScheme implements VotingScheme {
 
-    Set<Detector> voters = new HashSet<>();
+    Map<Detector,Double> voters = new HashMap<>();
 
     @Getter
-    int votesFor;
+    double votesFor;
 
     @Getter
-    int votesAgainst;
+    double votesAgainst;
     private double quorum;
 
     public QuorumScheme(double quorum) {
@@ -31,24 +33,29 @@ public class QuorumScheme implements VotingScheme {
 
     @Override
     public void registerVoter(Detector voter) {
-        voters.add(voter);
+        registerVoterWithWeight(voter, 1.0);
     }
 
     @Override
     public void registerVoterWithWeight(Detector voter, double weight) {
-        registerVoter(voter); // No weights needed in a simple quorum scheme. Delegate to simply register voter.
+        voters.put(voter, weight);
     }
 
     @Override
     public boolean getResult() {
         votesFor = 0;
-        for(Detector voter : voters) {
+        double weightedTotal = 0;
+        for(Map.Entry<Detector, Double> entry : voters.entrySet()) {
+            Detector voter = entry.getKey();
+            Double weight = entry.getValue();
             if(voter.isChangeDetected())
-                votesFor++;
+                votesFor += weight;
+
+            weightedTotal += weight;
         }
 
-        votesAgainst = voters.size() - votesFor;
-        double percentage = votesFor / (double)voters.size();
+        votesAgainst = weightedTotal - votesFor;
+        double percentage = votesFor / weightedTotal;
 
         return percentage >= quorum;
     }

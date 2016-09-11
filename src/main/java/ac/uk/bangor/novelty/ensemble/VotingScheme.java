@@ -13,7 +13,7 @@ public interface VotingScheme {
 
     boolean getResult();
 
-    int getVotesFor();
-    int getVotesAgainst();
+    double getVotesFor();
+    double getVotesAgainst();
 
 }
