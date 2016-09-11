@@ -5,11 +5,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
+ * Represents a basic quorum scheme which can be configured to provide simple majority or weighted majority voting, to
+ * various quorums.
+ *
  * @author Will Faithfull
  */
 @Slf4j
@@ -24,6 +25,12 @@ public class QuorumScheme implements VotingScheme {
     double votesAgainst;
     private double quorum;
 
+    /**
+     * Construct a voting scheme with the specified quorum
+     * @param quorum
+     *              A value between 0.0 and 1.0 representing the size of the quorum that must be achieved to signal an
+     *              outcome.
+     */
     public QuorumScheme(double quorum) {
         if(quorum < 0 || quorum > 1.0) {
             throw new IllegalArgumentException("Quorum value must be between 0.0 and 1.0.");

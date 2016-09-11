@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * A flexible ensemble implementation which accepts univariate and multivariate voters.
  * @author Will Faithfull
  */
 @Slf4j
@@ -21,6 +22,10 @@ public class MultivariateRealEnsemble implements MultivariateRealDetector {
     @Getter
     @Setter
     VotingScheme votingScheme;
+
+    @Getter
+    @Setter
+    WeightingScheme weightingScheme;
 
     private boolean change;
 
