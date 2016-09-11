@@ -71,14 +71,6 @@ public class TestUnivariateDetectors {
         evaluate(new CUSUM());
     }
 
-    @Test
-    public void printData() {
-        Stream<Double> changeStream = testDataProviderFactory().limit(1000);
-
-        String ml = CollectionUtils.toMatlabFormat(changeStream.mapToDouble(d -> d).toArray());
-        log.info(ml);
-    }
-
     public void evaluate(Detector<Double> univariateDetector) {
 
         Stream<Double> changeStream = testDataProviderFactory();

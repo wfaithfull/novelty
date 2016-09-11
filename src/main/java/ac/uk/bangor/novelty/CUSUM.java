@@ -3,7 +3,7 @@ package ac.uk.bangor.novelty;
 /**
  * Created by wfaithfull on 08/09/16.
  */
-public class CUSUM implements Detector<Double> {
+public class CUSUM implements UnivariateRealDetector {
 
     private final double h;
     private final double mszu;

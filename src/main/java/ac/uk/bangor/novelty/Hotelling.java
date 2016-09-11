@@ -11,7 +11,7 @@ import org.apache.commons.math3.stat.correlation.Covariance;
 /**
  * @author Will Faithfull
  */
-public class Hotelling implements Detector<double[]> {
+public class Hotelling implements MultivariateRealDetector {
 
     private static final int MAX_CONDITION = 10000;
     private FixedWindowPair<double[]> windowPair;

@@ -3,7 +3,7 @@ package ac.uk.bangor.novelty;
 /**
  * Created by wfaithfull on 06/09/16.
  */
-public class MovingRange implements Detector<Double> {
+public class MovingRange implements UnivariateRealDetector {
     private boolean started = false;
     private StatsProvider statsMovingRange = new OnlineStatistics();
     private StatsProvider statsIndividuals = new OnlineStatistics();
