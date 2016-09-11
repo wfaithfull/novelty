@@ -8,7 +8,7 @@ public class CUSUM implements Detector<Double> {
     private final double h;
     private final double mszu;
     private final double mszl;
-    private StatsProvider stats = new OnlineStatistics();
+    private final StatsProvider stats = new OnlineStatistics();
     private double upper = 0;
     private double lower = 0;
 
