@@ -22,7 +22,7 @@ public class MultivariateRealEnsemble implements MultivariateRealDetector {
     @Getter
     @Setter
     VotingScheme votingScheme;
-    
+
     private boolean change;
 
     public MultivariateRealEnsemble() {
@@ -70,16 +70,32 @@ public class MultivariateRealEnsemble implements MultivariateRealDetector {
         addDetector(detector, FeatureMapping.ofSingle(feature));
     }
 
+    public void addUnivariate(UnivariateRealDetector detector, int feature, double weight) {
+        addDetectorWithWeight(detector, FeatureMapping.ofSingle(feature), weight);
+    }
+
     public void addMultivariate(MultivariateRealDetector detector) {
         addDetector(detector, FeatureMapping.ofAllFeatures());
+    }
+
+    public void addMultivariate(MultivariateRealDetector detector, double weight) {
+        addDetectorWithWeight(detector, FeatureMapping.ofAllFeatures(), weight);
     }
 
     public void addMultivariate(MultivariateRealDetector detector, int... features) {
         addDetector(detector, FeatureMapping.of(features));
     }
 
+    public void addMultivariate(MultivariateRealDetector detector, int[] features, double weight) {
+        addDetectorWithWeight(detector, FeatureMapping.of(features), weight);
+    }
+
     private void addDetector(Detector detector, FeatureMapping mapping) {
+        addDetectorWithWeight(detector, mapping, 1.0);
+    }
+
+    private void addDetectorWithWeight(Detector detector, FeatureMapping mapping, double weight) {
         detectors.put(detector, mapping);
-        votingScheme.registerVoter(detector);
+        votingScheme.registerVoterWithWeight(detector, weight);
     }
 }
