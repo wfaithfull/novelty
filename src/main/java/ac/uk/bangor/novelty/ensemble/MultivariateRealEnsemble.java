@@ -22,11 +22,7 @@ public class MultivariateRealEnsemble implements MultivariateRealDetector {
     @Getter
     @Setter
     VotingScheme votingScheme;
-
-    @Getter
-    @Setter
-    WeightingScheme weightingScheme;
-
+    
     private boolean change;
 
     public MultivariateRealEnsemble() {
