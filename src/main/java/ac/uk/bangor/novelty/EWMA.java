@@ -3,7 +3,7 @@ package ac.uk.bangor.novelty;
 /**
  * Created by wfaithfull on 06/09/16.
  */
-public class EWMA implements Detector<Double> {
+public class EWMA implements UnivariateRealDetector {
 
     private StatsProvider stats;
     private static final int MINIMUM_SAMPLES = 10;

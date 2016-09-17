@@ -1,7 +1,5 @@
-import ac.uk.bangor.novelty.Detector;
-import ac.uk.bangor.novelty.Hotelling;
-import ac.uk.bangor.novelty.KL;
-import ac.uk.bangor.novelty.SPLL;
+import ac.uk.bangor.novelty.*;
+import ac.uk.bangor.novelty.ensemble.MultivariateRealEnsemble;
 import ac.uk.bangor.novelty.windowing.FixedWindowPair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.distribution.GammaDistribution;
@@ -66,6 +64,20 @@ public class TestMultivariateDetectors {
     public void testHotelling() {
         log.info("Starting Hotelling test");
         evaluate(new Hotelling(new FixedWindowPair<>(25, 25, double[].class)));
+    }
+
+    @Test
+    public void testEnsembleOfUnivariates() {
+
+        MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble();
+        for(int i = 0; i < FEATURES; i++) {
+            ensemble.addUnivariate(new CUSUM(), i);
+            ensemble.addUnivariate(new EWMA(0.25), i);
+            ensemble.addUnivariate(new Grubbs(50, 3), i);
+            ensemble.addUnivariate(new MovingRange(), i);
+        }
+
+        evaluate(ensemble);
     }
 
     public void evaluate(Detector<double[]> multivariateDetector) {

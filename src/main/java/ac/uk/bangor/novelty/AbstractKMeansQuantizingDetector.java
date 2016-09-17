@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * This uses the Apache commons KMeansPlusPlusClusterer for clustering, although in theory it should be straightforward
  * to substitute this for another clustering algorithm.
  */
-public abstract class AbstractKMeansQuantizingDetector implements Detector<double[]> {
+public abstract class AbstractKMeansQuantizingDetector implements MultivariateRealDetector {
 
     protected final FixedWindowPair<double[]> windowPair;
     private final KMeansPlusPlusClusterer<DoublePoint> clusterer;

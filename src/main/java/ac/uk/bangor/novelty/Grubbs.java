@@ -8,7 +8,7 @@ import org.apache.commons.math3.stat.StatUtils;
 /**
  * Created by wfaithfull on 06/09/16.
  */
-public class Grubbs implements Detector<Double> {
+public class Grubbs implements UnivariateRealDetector {
 
     private boolean change;
     private Window<Double> window;
