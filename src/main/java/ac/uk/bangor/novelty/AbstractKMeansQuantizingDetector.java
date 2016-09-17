@@ -102,12 +102,16 @@ public abstract class AbstractKMeansQuantizingDetector implements Detector<doubl
 
             List<DoublePoint> data = cluster.getPoints();
 
-            double[][] clusterData = CollectionUtils.toArray(data.stream().map(x -> x.getPoint()).collect(Collectors.toList()));
-
             RealMatrix clusterCovariance;
-            if(nObservations == 1.0) {
+
+            // So, in the quite rare case where we have very little diversity in the clustering data, the clusterer
+            // can fail to correctly follow the empty cluster strategy, and we end up with an empty cluster out here.
+            // It makes very little difference to us, be it empty cluster or singleton cluster, we will just initialise
+            // an empty covariance matrix, because we can't calculate a covariance matrix for either.
+            if(nObservations <= 1.0) {
                 clusterCovariance = new Array2DRowRealMatrix(nFeatures, nFeatures);
             } else {
+                double[][] clusterData = CollectionUtils.toArray(data.stream().map(x -> x.getPoint()).collect(Collectors.toList()));
                 clusterCovariance = new Covariance(clusterData).getCovarianceMatrix();
             }
 
