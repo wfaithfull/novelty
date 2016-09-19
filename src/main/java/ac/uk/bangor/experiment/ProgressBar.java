@@ -39,7 +39,7 @@ public class ProgressBar {
             builder.append(character);
         }
 
-        System.out.printf("\r(%c) %3d%% [%-"+(width-1)+"s] %s", spinner, percent, builder, message);
+        System.out.printf("\r(%c) %3d%% [%-"+width+"s] %s", spinner, percent, builder, message);
 
         if (progress == total) {
             System.out.flush();
