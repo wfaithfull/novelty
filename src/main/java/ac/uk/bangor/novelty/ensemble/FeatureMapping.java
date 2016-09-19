@@ -5,6 +5,8 @@ import ac.uk.bangor.novelty.Detector;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Getter
 @Setter
 public class FeatureMapping {
@@ -24,7 +26,7 @@ public class FeatureMapping {
     }
 
     private FeatureMapping(int... features) {
-        this.features = features;
+        this.features = Arrays.copyOf(features, features.length);
     }
 
     private FeatureMapping() {

@@ -1,4 +1,5 @@
 import ac.uk.bangor.novelty.*;
+import ac.uk.bangor.novelty.ensemble.EnsembleFactory;
 import ac.uk.bangor.novelty.ensemble.MultivariateRealEnsemble;
 import ac.uk.bangor.novelty.windowing.FixedWindowPair;
 import lombok.extern.slf4j.Slf4j;
@@ -7,8 +8,10 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.RealDistribution;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -99,6 +102,16 @@ public class TestMultivariateDetectors {
         ensemble.addMultivariate(new Hotelling(new FixedWindowPair<>(25, 25, double[].class)), 15, 16, 17, 18, 19);
         ensemble.addMultivariate(new KL(new FixedWindowPair<>(25, 25, double[].class), 3), 20, 21, 22, 23, 24);
 
+        evaluate(ensemble);
+    }
+
+    @Test
+    public void testRandomSubspaceEnsemble() throws IOException, ClassNotFoundException {
+
+        // Define a function that takes the subspace size and returns a detector
+        Function<Integer,MultivariateRealDetector> detectorFunction = subspaceSize ->
+                new Hotelling(new FixedWindowPair<>(25, 25, double[].class));
+        MultivariateRealEnsemble ensemble = EnsembleFactory.buildRandomSubspaceEnsemble(FEATURES,3,detectorFunction);
         evaluate(ensemble);
     }
 
