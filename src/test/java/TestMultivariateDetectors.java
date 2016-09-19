@@ -90,6 +90,18 @@ public class TestMultivariateDetectors {
         evaluate(ensemble);
     }
 
+    @Test
+    public void testSubspaceEnsemble() {
+        MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble();
+        ensemble.addMultivariate(new Hotelling(new FixedWindowPair<>(25, 25, double[].class)), 0, 1, 2, 3, 4);
+        ensemble.addMultivariate(new KL(new FixedWindowPair<>(25, 25, double[].class), 3), 5, 6, 7, 8, 9);
+        ensemble.addMultivariate(new SPLL(new FixedWindowPair<>(25, 25, double[].class), 3), 10, 11, 12, 13, 14);
+        ensemble.addMultivariate(new Hotelling(new FixedWindowPair<>(25, 25, double[].class)), 15, 16, 17, 18, 19);
+        ensemble.addMultivariate(new KL(new FixedWindowPair<>(25, 25, double[].class), 3), 20, 21, 22, 23, 24);
+
+        evaluate(ensemble);
+    }
+
     public void evaluate(Detector<double[]> multivariateDetector) {
 
         Stream<double[]> changeStream = testDataProviderFactory();
