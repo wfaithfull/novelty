@@ -80,6 +80,16 @@ public class TestMultivariateDetectors {
         evaluate(ensemble);
     }
 
+    @Test
+    public void testEnsembleOfMultivariates() {
+        MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble();
+        ensemble.addMultivariate(new Hotelling(new FixedWindowPair<>(25, 25, double[].class)));
+        ensemble.addMultivariate(new KL(new FixedWindowPair<>(25, 25, double[].class), 3));
+        ensemble.addMultivariate(new SPLL(new FixedWindowPair<>(25, 25, double[].class), 3));
+
+        evaluate(ensemble);
+    }
+
     public void evaluate(Detector<double[]> multivariateDetector) {
 
         Stream<double[]> changeStream = testDataProviderFactory();

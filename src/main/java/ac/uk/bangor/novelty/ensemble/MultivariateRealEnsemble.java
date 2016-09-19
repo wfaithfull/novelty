@@ -48,8 +48,10 @@ public class MultivariateRealEnsemble implements MultivariateRealDetector {
                 UnivariateRealDetector univariateRealDetector = (UnivariateRealDetector) entry.getKey();
                 univariateRealDetector.update(example[mapping.getFeatures()[0]]);
             } else {
-                if(mapping.count() == 0 || mapping.count() > example.length) {
-                    throw new RuntimeException("Illegal feature count for multivariate detector: " + mapping.count());
+                if(!mapping.isAllFeatures()) {
+                    if (mapping.count() == 0 || mapping.count() > example.length) {
+                        throw new RuntimeException("Illegal feature count for multivariate detector: " + mapping.count());
+                    }
                 }
 
                 MultivariateRealDetector multivariateRealDetector = (MultivariateRealDetector) entry.getKey();
