@@ -1,12 +1,9 @@
 package ac.uk.bangor.experiment;
 
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.PrintStream;
-import java.util.Locale;
-import java.util.Random;
-
+import ac.uk.bangor.novelty.*;
+import ac.uk.bangor.novelty.ensemble.MultivariateRealEnsemble;
+import ac.uk.bangor.novelty.ensemble.QuorumScheme;
+import ac.uk.bangor.novelty.windowing.FixedWindowPair;
 import weka.core.CommandlineRunnable;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -14,16 +11,13 @@ import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
 import weka.filters.unsupervised.instance.Resample;
-import ac.uk.bangor.novelty.CUSUM;
-import ac.uk.bangor.novelty.EWMA;
-import ac.uk.bangor.novelty.Grubbs;
-import ac.uk.bangor.novelty.Hotelling;
-import ac.uk.bangor.novelty.KL;
-import ac.uk.bangor.novelty.MovingRange;
-import ac.uk.bangor.novelty.MultivariateRealDetector;
-import ac.uk.bangor.novelty.SPLL;
-import ac.uk.bangor.novelty.ensemble.MultivariateRealEnsemble;
-import ac.uk.bangor.novelty.windowing.FixedWindowPair;
+
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.PrintStream;
+import java.util.Locale;
+import java.util.Random;
 
 public class Novelty implements CommandlineRunnable {
 
@@ -144,16 +138,16 @@ public class Novelty implements CommandlineRunnable {
     }
 
     public MultivariateRealDetector getNewDetector(int d, Instances stream) {
+        int length = Integer.max(25, (stream.numAttributes() + 3)/2);
         switch (d) {
             case 0:
-                int length = Integer.max(25, (stream.numAttributes() + 3)/2);
                 return new Hotelling(new FixedWindowPair<>(length, length, double[].class));
             case 1:
                 return new KL(new FixedWindowPair<>(25, 25, double[].class), 3);
             case 2:
                 return new SPLL(new FixedWindowPair<>(25, 25, double[].class), 3);
             case 3:
-                MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble();
+                MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble(new QuorumScheme(0.3));
                 for(int i = 0; i < stream.numAttributes(); i++) {
                     ensemble.addUnivariate(new CUSUM(), i);
                     ensemble.addUnivariate(new EWMA(0.25), i);
@@ -163,7 +157,7 @@ public class Novelty implements CommandlineRunnable {
                 return ensemble;
             case 4:
                 MultivariateRealEnsemble mvEnsemble = new MultivariateRealEnsemble();
-                mvEnsemble.addMultivariate(new Hotelling(new FixedWindowPair<>(25, 25, double[].class)));
+                mvEnsemble.addMultivariate(new Hotelling(new FixedWindowPair<>(length, length, double[].class)));
                 mvEnsemble.addMultivariate(new KL(new FixedWindowPair<>(25, 25, double[].class), 3));
                 mvEnsemble.addMultivariate(new SPLL(new FixedWindowPair<>(25, 25, double[].class), 3));
                 return mvEnsemble;
