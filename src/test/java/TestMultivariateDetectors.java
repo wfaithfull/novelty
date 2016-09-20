@@ -1,6 +1,7 @@
 import ac.uk.bangor.novelty.*;
 import ac.uk.bangor.novelty.ensemble.EnsembleFactory;
 import ac.uk.bangor.novelty.ensemble.MultivariateRealEnsemble;
+import ac.uk.bangor.novelty.ensemble.QuorumScheme;
 import ac.uk.bangor.novelty.windowing.FixedWindowPair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.distribution.GammaDistribution;
@@ -72,7 +73,7 @@ public class TestMultivariateDetectors {
     @Test
     public void testEnsembleOfUnivariates() {
 
-        MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble();
+        MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble(new QuorumScheme(1.0/3));
         for(int i = 0; i < FEATURES; i++) {
             ensemble.addUnivariate(new CUSUM(), i);
             ensemble.addUnivariate(new EWMA(0.25), i);
