@@ -94,14 +94,13 @@ public class TestMultivariateDetectors {
     }
 
     @Test
-    public void testSubspaceEnsemble() {
-        MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble();
-        ensemble.addMultivariate(new Hotelling(new FixedWindowPair<>(25, 25, double[].class)), 0, 1, 2, 3, 4);
-        ensemble.addMultivariate(new KL(new FixedWindowPair<>(25, 25, double[].class), 3), 5, 6, 7, 8, 9);
-        ensemble.addMultivariate(new SPLL(new FixedWindowPair<>(25, 25, double[].class), 3), 10, 11, 12, 13, 14);
-        ensemble.addMultivariate(new Hotelling(new FixedWindowPair<>(25, 25, double[].class)), 15, 16, 17, 18, 19);
-        ensemble.addMultivariate(new KL(new FixedWindowPair<>(25, 25, double[].class), 3), 20, 21, 22, 23, 24);
+    public void testRandomDisjointSubspaceEnsemble() {
+        // Define a function that takes the subspace size and returns a detector
+        Function<Integer,MultivariateRealDetector> detectorFunction = subspaceSize ->
+                new Hotelling(new FixedWindowPair<>(25, 25, double[].class));
 
+        // Disjoint subspaces of size 3 (and remainder if necessary)
+        MultivariateRealEnsemble ensemble = EnsembleFactory.buildRandomDisjointSubspaceEnsemble(FEATURES,3,detectorFunction);
         evaluate(ensemble);
     }
 
@@ -111,7 +110,8 @@ public class TestMultivariateDetectors {
         // Define a function that takes the subspace size and returns a detector
         Function<Integer,MultivariateRealDetector> detectorFunction = subspaceSize ->
                 new Hotelling(new FixedWindowPair<>(25, 25, double[].class));
-        MultivariateRealEnsemble ensemble = EnsembleFactory.buildRandomSubspaceEnsemble(FEATURES,3,detectorFunction);
+        // 15 features per subspace, 10 subspaces.
+        MultivariateRealEnsemble ensemble = EnsembleFactory.buildRandomSubspaceEnsemble(FEATURES,15,10,detectorFunction);
         evaluate(ensemble);
     }
 
