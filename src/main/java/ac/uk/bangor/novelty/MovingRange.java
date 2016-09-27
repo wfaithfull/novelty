@@ -23,6 +23,10 @@ public class MovingRange implements UnivariateRealDetector {
     @Override
     public void update(Double input) {
         double mr = movingRange(input);
+        if(!started) {
+            started = true;
+            return;
+        }
         statsMovingRange.update(mr);
         statsIndividuals.update(input);
 
@@ -36,7 +40,6 @@ public class MovingRange implements UnivariateRealDetector {
 
     private double movingRange(double observation) {
         if(!started) {
-            started = true;
             return 0;
         }
         return Math.abs(observation - lastObservation);
