@@ -11,7 +11,7 @@ public interface VotingScheme {
     /**
      * Register a voter with this voting scheme.
      *
-     * Delegates to {@link #registerVoterWithWeight(Detector, double)} with a weight of 1.0.
+     * Delegates to {@link #setWeight(Detector, double)} with a weight of 1.0.
      * @param voter
      *              Unique detector with a vote.
      */
@@ -24,7 +24,7 @@ public interface VotingScheme {
      * @param weight
      *              Double precision value representing the influence of this voter. Default 1.0.
      */
-    void registerVoterWithWeight(Detector voter, double weight);
+    void setWeight(Detector voter, double weight);
 
     /**
      * Ask the voters for their decisions, apply the scheme, and work out the result.

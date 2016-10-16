@@ -23,8 +23,6 @@ public class MultivariateRealEnsemble implements MultivariateRealDetector {
     @Setter
     VotingScheme votingScheme;
 
-    private boolean change;
-
     public MultivariateRealEnsemble() {
         this(new QuorumScheme(0.5)); // simple majority
     }
@@ -59,13 +57,11 @@ public class MultivariateRealEnsemble implements MultivariateRealDetector {
             }
         }
 
-        // Voters have been updated, request their decision.
-        change = votingScheme.getResult();
     }
 
     @Override
     public boolean isChangeDetected() {
-        return change;
+        return votingScheme.getResult();
     }
 
     public void addUnivariate(UnivariateRealDetector detector, int feature) {
@@ -98,6 +94,6 @@ public class MultivariateRealEnsemble implements MultivariateRealDetector {
 
     private void addDetectorWithWeight(Detector detector, FeatureMapping mapping, double weight) {
         detectors.put(detector, mapping);
-        votingScheme.registerVoterWithWeight(detector, weight);
+        votingScheme.setWeight(detector, weight);
     }
 }

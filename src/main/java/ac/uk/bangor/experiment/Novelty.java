@@ -1,6 +1,7 @@
 package ac.uk.bangor.experiment;
 
 import ac.uk.bangor.novelty.*;
+import ac.uk.bangor.novelty.ensemble.FeatureWeightedSubsetEnsemble;
 import ac.uk.bangor.novelty.ensemble.MultivariateRealEnsemble;
 import ac.uk.bangor.novelty.ensemble.QuorumScheme;
 import ac.uk.bangor.novelty.windowing.FixedWindowPair;
@@ -18,6 +19,7 @@ import java.io.FileReader;
 import java.io.PrintStream;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.*;
 
 public class Novelty implements CommandlineRunnable {
 
@@ -133,7 +135,7 @@ public class Novelty implements CommandlineRunnable {
     }
 
     public String getDetectorName(int d) {
-        String [] names = {"Hotelling", "KL", "SPLL", "Ensemble","Multivariates Ensemble"};
+        String [] names = {"Hotelling", "KL", "SPLL", "CUSUM Ensemble","Feature Weighted Subset Ensemble"};
         return names[d];
     }
 
@@ -147,24 +149,23 @@ public class Novelty implements CommandlineRunnable {
             case 2:
                 return new SPLL(new FixedWindowPair<>(25, 25, double[].class), 3);
             case 3:
-                MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble(new QuorumScheme(0.3));
+                MultivariateRealEnsemble ensemble = new MultivariateRealEnsemble(new QuorumScheme(1d/3));
                 for(int i = 0; i < stream.numAttributes(); i++) {
                     ensemble.addUnivariate(new CUSUM(), i);
-                    ensemble.addUnivariate(new EWMA(0.25), i);
-                    ensemble.addUnivariate(new Grubbs(50, 3), i);
-                    ensemble.addUnivariate(new MovingRange(), i);
                 }
                 return ensemble;
             case 4:
-                MultivariateRealEnsemble mvEnsemble = new MultivariateRealEnsemble();
+                return new FeatureWeightedSubsetEnsemble(stream.numAttributes(), stream.numAttributes() / 2, 9, x -> new SPLL(new FixedWindowPair<>(25,25,double[].class),3), () -> new CUSUM());
+                /*MultivariateRealEnsemble mvEnsemble = new MultivariateRealEnsemble();
                 mvEnsemble.addMultivariate(new Hotelling(new FixedWindowPair<>(length, length, double[].class)));
                 mvEnsemble.addMultivariate(new KL(new FixedWindowPair<>(25, 25, double[].class), 3));
                 mvEnsemble.addMultivariate(new SPLL(new FixedWindowPair<>(25, 25, double[].class), 3));
-                return mvEnsemble;
+                return mvEnsemble;*/
         }
         return null;
     }
 
+    ExecutorService executor = new ThreadPoolExecutor(2, 2, 10, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(2));
 
     public void process(String fileName) throws Exception {
         Instances instances = new Instances(new BufferedReader(new FileReader(fileName)));
@@ -184,41 +185,56 @@ public class Novelty implements CommandlineRunnable {
             double[] meanMDR = new double[getNumDetectors()]; // Missed Detection Ratio
             double[] probNFA = new double[getNumDetectors()]; // No False Alarms
 
+            BlockingQueue queue = new ArrayBlockingQueue(m_Repetitions);
             for (int i = 0; i < m_Repetitions; i++) {
-                progressBar.update(i, m_Repetitions, isGradual ? "Gradual" : "Abrupt");
-
-                Instances stream = generateDataset(instances, isGradual);
-                for (int d = 0; d < getNumDetectors(); d++) {
-                    MultivariateRealDetector detector = getNewDetector(d, stream);
-                    int arl = -1;
-                    int ttd = -1;
-                    int j = 0;
-                    for (Instance instance : stream) {
-                        double[] x = instance.toDoubleArray();
-                        detector.update(x);
-                        if (detector.isChangeDetected()) {
-                            detector = getNewDetector(d, stream);
-                            if (j < m_ChangePoint && arl < 0)
-                                arl = j;
-                            if (j >= m_ChangePoint) {
-                                ttd = j - m_ChangePoint;
-                                break;
+                //progressBar.update(i, m_Repetitions, isGradual ? "Gradual" : "Abrupt");
+                int finalI = i;
+                Runnable task = () -> {
+                    Instances stream = null;
+                    progressBar.update(finalI, m_Repetitions, isGradual ? "Gradual" : "Abrupt");
+                    try {
+                        stream = generateDataset(instances, isGradual);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    for (int d = 0; d < getNumDetectors(); d++) {
+                        MultivariateRealDetector detector = getNewDetector(d, stream);
+                        int arl = -1;
+                        int ttd = -1;
+                        int j = 0;
+                        for (Instance instance : stream) {
+                            double[] x = instance.toDoubleArray();
+                            detector.update(x);
+                            if (detector.isChangeDetected()) {
+                                detector = getNewDetector(d, stream);
+                                if (j < m_ChangePoint && arl < 0)
+                                    arl = j;
+                                if (j >= m_ChangePoint) {
+                                    ttd = j - m_ChangePoint;
+                                    break;
+                                }
                             }
+                            j++;
                         }
-                        j++;
+                        if (arl < 0) {
+                            arl = m_ChangePoint;
+                            probNFA[d]++;
+                        }
+                        meanARL[d] += arl;
+                        if (ttd < 0) {
+                            ttd = m_TotalLength - m_ChangePoint;
+                            meanMDR[d]++;
+                        }
+                        meanTTD[d] += ttd;
                     }
-                    if (arl < 0) {
-                        arl = m_ChangePoint;
-                        probNFA[d]++;
-                    }
-                    meanARL[d] += arl;
-                    if (ttd < 0) {
-                        ttd = m_TotalLength - m_ChangePoint;
-                        meanMDR[d]++;
-                    }
-                    meanTTD[d] += ttd;
-                }
+                };
+                queue.add(task);
             }
+            ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(8, 8, 10, TimeUnit.MINUTES, queue);
+            poolExecutor.prestartAllCoreThreads();
+            poolExecutor.shutdown();
+            poolExecutor.awaitTermination(1, TimeUnit.HOURS);
+
             for (int d = 0; d < meanARL.length; d++) {
                 meanARL[d] /= (double) m_Repetitions;
                 meanTTD[d] /= (double) m_Repetitions;

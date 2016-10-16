@@ -40,11 +40,11 @@ public class QuorumScheme implements VotingScheme {
 
     @Override
     public void registerVoter(Detector voter) {
-        registerVoterWithWeight(voter, 1.0);
+        setWeight(voter, 1.0);
     }
 
     @Override
-    public void registerVoterWithWeight(Detector voter, double weight) {
+    public void setWeight(Detector voter, double weight) {
         voters.put(voter, weight);
     }
 
