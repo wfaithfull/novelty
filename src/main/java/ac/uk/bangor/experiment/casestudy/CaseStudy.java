@@ -114,12 +114,6 @@ public class CaseStudy implements CommandlineRunnable {
 
         double ARL = averageRunLength / (double)detections.size();
 
-        List<Long> d2cp = new ArrayList<>();
-        for(long detection : this.detections) {
-            ChangePoint closestPoint = closestBinarySearch(detection, changePoints);
-            d2cp.add(Math.abs(detection - closestPoint.getIndex()));
-        }
-
         double meanTTD, medianTTD, detectionRatio;
         meanTTD = medianTTD = detectionRatio = 0.0;
 
