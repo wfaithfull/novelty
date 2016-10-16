@@ -1,8 +1,8 @@
-import ac.uk.bangor.novelty.*;
-import ac.uk.bangor.novelty.ensemble.EnsembleFactory;
-import ac.uk.bangor.novelty.ensemble.MultivariateRealEnsemble;
-import ac.uk.bangor.novelty.ensemble.QuorumScheme;
-import ac.uk.bangor.novelty.windowing.FixedWindowPair;
+import uk.ac.bangor.novelty.*;
+import uk.ac.bangor.novelty.ensemble.EnsembleFactory;
+import uk.ac.bangor.novelty.ensemble.MultivariateRealEnsemble;
+import uk.ac.bangor.novelty.ensemble.QuorumScheme;
+import uk.ac.bangor.novelty.windowing.FixedWindowPair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.distribution.GammaDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;

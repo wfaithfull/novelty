@@ -1,5 +1,4 @@
-import ac.uk.bangor.novelty.*;
-import ac.uk.bangor.novelty.util.CollectionUtils;
+import uk.ac.bangor.novelty.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.distribution.GammaDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
